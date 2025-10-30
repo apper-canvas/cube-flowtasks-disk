@@ -1,5 +1,19 @@
 import React, { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import TaskCard from "@/components/molecules/TaskCard";
 import TaskModal from "@/components/organisms/TaskModal";
 import DeleteConfirmModal from "@/components/organisms/DeleteConfirmModal";
@@ -7,12 +21,46 @@ import Empty from "@/components/ui/Empty";
 import { useTasks } from "@/hooks/useTasks";
 
 const TaskList = ({ tasks, searchQuery, onCreateTask }) => {
-  const { updateTask, deleteTask, toggleTaskComplete } = useTasks();
+  const { updateTask, deleteTask, toggleTaskComplete, reorderTasks } = useTasks();
   const [editingTask, setEditingTask] = useState(null);
   const [deletingTaskId, setDeletingTaskId] = useState(null);
   const [taskModalLoading, setTaskModalLoading] = useState(false);
   const [deleteModalLoading, setDeleteModalLoading] = useState(false);
 
+  // Setup drag and drop sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
+    useSensor(TouchSensor)
+  );
+
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
+
+    if (!over || active.id === over.id) {
+      return;
+    }
+
+    const oldIndex = tasks.findIndex((task) => task.id === active.id);
+    const newIndex = tasks.findIndex((task) => task.id === over.id);
+
+    if (oldIndex === -1 || newIndex === -1) {
+      return;
+    }
+
+    // Create new order array
+    const newTasks = [...tasks];
+    const [movedTask] = newTasks.splice(oldIndex, 1);
+    newTasks.splice(newIndex, 0, movedTask);
+
+    // Extract task IDs in new order
+    const taskIds = newTasks.map((task) => task.id);
+    
+    // Update order via hook
+    reorderTasks(taskIds);
+  };
   const deletingTask = tasks.find(task => task.id === deletingTaskId);
 
   const handleEditTask = (task) => {
@@ -75,29 +123,32 @@ const TaskList = ({ tasks, searchQuery, onCreateTask }) => {
     return <Empty {...emptyProps} />;
   }
 
-  return (
+return (
     <>
-      <div className="space-y-4">
-        <AnimatePresence mode="popLayout">
-          {tasks.map((task) => (
-            <motion.div
-              key={task.id}
-              layout
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20, scale: 0.95 }}
-              transition={{ duration: 0.2 }}
-            >
-              <TaskCard
-                task={task}
-                onToggleComplete={toggleTaskComplete}
-                onEdit={handleEditTask}
-                onDelete={handleDeleteClick}
-              />
-            </motion.div>
-          ))}
-        </AnimatePresence>
-      </div>
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext
+          items={tasks.map((task) => task.id)}
+          strategy={verticalListSortingStrategy}
+        >
+          <div className="space-y-4">
+            <AnimatePresence mode="popLayout">
+              {tasks.map((task) => (
+                <TaskCard
+                  key={task.id}
+                  task={task}
+                  onToggleComplete={toggleTaskComplete}
+                  onEdit={handleEditTask}
+                  onDelete={handleDeleteClick}
+                />
+              ))}
+            </AnimatePresence>
+          </div>
+        </SortableContext>
+      </DndContext>
 
       {/* Task Edit Modal */}
       <TaskModal

@@ -1,12 +1,13 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { format, isAfter, isBefore, startOfDay, isToday } from "date-fns";
 import { cn } from "@/utils/cn";
 import ApperIcon from "@/components/ApperIcon";
 import Checkbox from "@/components/atoms/Checkbox";
 import Badge from "@/components/atoms/Badge";
 import { useCategories } from "@/hooks/useCategories";
-
 const TaskCard = ({ 
   task, 
   onToggleComplete, 
@@ -18,6 +19,19 @@ const TaskCard = ({
   const category = getCategoryById(task.category);
   const categoryColor = getCategoryColor(task.category);
 
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: task.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
   const handleToggleComplete = async () => {
     await onToggleComplete(task.id);
   };
@@ -72,8 +86,12 @@ const TaskCard = ({
     }
   };
 
-  return (
+return (
     <motion.div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
       layout
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -82,11 +100,14 @@ const TaskCard = ({
       className={cn(
         "bg-white rounded-xl p-6 shadow-sm border border-gray-100 card-elevation group",
         task.status === "completed" && "opacity-75",
+        isDragging && "opacity-50 cursor-grabbing z-50",
+        !isDragging && "cursor-grab",
         className
       )}
       style={{
         borderLeftColor: categoryColor,
-        borderLeftWidth: "4px"
+        borderLeftWidth: "4px",
+        ...style
       }}
     >
       <div className="flex items-start gap-4">

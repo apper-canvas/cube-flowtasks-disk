@@ -140,6 +140,38 @@ class TaskService {
       } catch (error) {
         reject(error);
       }
+});
+  }
+
+  async reorderTasks(taskIds) {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        try {
+          const tasks = this.getStoredTasks();
+          
+          // Create a map of task IDs to their new order
+          const orderMap = {};
+          taskIds.forEach((id, index) => {
+            orderMap[id] = index;
+          });
+          
+          // Update order field for each task
+          const updatedTasks = tasks.map(task => {
+            if (orderMap.hasOwnProperty(task.id)) {
+              return {
+                ...task,
+                order: orderMap[task.id]
+              };
+            }
+            return task;
+          });
+          
+          this.saveTasks(updatedTasks);
+          resolve(updatedTasks);
+        } catch (error) {
+          reject(error);
+        }
+      }, 200);
     });
   }
 }

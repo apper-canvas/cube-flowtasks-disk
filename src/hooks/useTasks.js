@@ -75,11 +75,33 @@ export const useTasks = () => {
       return updatedTask;
     } catch (err) {
       const errorMessage = err.message || "Failed to update task status";
-      toast.error(errorMessage);
+toast.error(errorMessage);
       throw err;
     }
   }, []);
 
+  const reorderTasks = useCallback(async (taskIds) => {
+    try {
+      // Optimistically update local state
+      setTasks(prev => {
+        const taskMap = {};
+        prev.forEach(task => {
+          taskMap[task.id] = task;
+        });
+        return taskIds.map(id => taskMap[id]).filter(Boolean);
+      });
+      
+      // Persist to service
+      await taskService.reorderTasks(taskIds);
+      toast.success("Tasks reordered successfully!");
+    } catch (err) {
+      const errorMessage = err.message || "Failed to reorder tasks";
+      toast.error(errorMessage);
+      // Reload tasks to restore correct order on failure
+      await loadTasks();
+      throw err;
+    }
+  }, [loadTasks]);
   useEffect(() => {
     loadTasks();
   }, [loadTasks]);
@@ -89,13 +111,14 @@ export const useTasks = () => {
   }, [loadTasks]);
 
   return {
-    tasks,
+tasks,
     loading,
     error,
     createTask,
     updateTask,
     deleteTask,
     toggleTaskComplete,
+    reorderTasks,
     retryLoad
   };
 };
