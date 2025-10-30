@@ -1,0 +1,79 @@
+[
+  {
+    "id": "1",
+    "title": "Complete project proposal",
+    "description": "Finalize the quarterly project proposal and submit to management for review",
+    "status": "active",
+    "priority": "high",
+    "category": "work",
+    "dueDate": "2024-12-30T17:00:00.000Z",
+    "createdAt": "2024-12-15T09:00:00.000Z",
+    "completedAt": null
+  },
+  {
+    "id": "2",
+    "title": "Buy groceries",
+    "description": "Weekly grocery shopping - milk, bread, eggs, vegetables, and fruits",
+    "status": "active",
+    "priority": "medium",
+    "category": "personal",
+    "dueDate": "2024-12-28T19:00:00.000Z",
+    "createdAt": "2024-12-15T10:30:00.000Z",
+    "completedAt": null
+  },
+  {
+    "id": "3",
+    "title": "Schedule dentist appointment",
+    "description": "Call dental office to schedule routine cleaning and check-up",
+    "status": "completed",
+    "priority": "low",
+    "category": "health",
+    "dueDate": "2024-12-25T14:00:00.000Z",
+    "createdAt": "2024-12-14T16:45:00.000Z",
+    "completedAt": "2024-12-16T11:20:00.000Z"
+  },
+  {
+    "id": "4",
+    "title": "Review team performance reports",
+    "description": "Analyze Q4 performance metrics and prepare feedback for team members",
+    "status": "active",
+    "priority": "high",
+    "category": "work",
+    "dueDate": "2024-12-29T16:00:00.000Z",
+    "createdAt": "2024-12-16T08:15:00.000Z",
+    "completedAt": null
+  },
+  {
+    "id": "5",
+    "title": "Plan weekend hiking trip",
+    "description": "Research trails, check weather, and prepare hiking gear for family trip",
+    "status": "active",
+    "priority": "low",
+    "category": "personal",
+    "dueDate": "2024-12-27T12:00:00.000Z",
+    "createdAt": "2024-12-16T19:30:00.000Z",
+    "completedAt": null
+  },
+  {
+    "id": "6",
+    "title": "Update website content",
+    "description": "Refresh homepage with latest product information and testimonials",
+    "status": "completed",
+    "priority": "medium",
+    "category": "work",
+    "dueDate": "2024-12-26T15:00:00.000Z",
+    "createdAt": "2024-12-13T14:20:00.000Z",
+    "completedAt": "2024-12-15T13:45:00.000Z"
+  },
+  {
+    "id": "7",
+    "title": "Organize home office",
+    "description": "Declutter desk, organize files, and create better storage system",
+    "status": "active",
+    "priority": "medium",
+    "category": "personal",
+    "dueDate": null,
+    "createdAt": "2024-12-17T11:00:00.000Z",
+    "completedAt": null
+  }
+]
