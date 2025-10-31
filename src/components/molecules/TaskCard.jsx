@@ -8,13 +8,13 @@ import ApperIcon from "@/components/ApperIcon";
 import Checkbox from "@/components/atoms/Checkbox";
 import Badge from "@/components/atoms/Badge";
 import { useCategories } from "@/hooks/useCategories";
-const TaskCard = ({ 
+const TaskCard = React.forwardRef(({ 
   task, 
   onToggleComplete, 
   onEdit, 
   onDelete,
   className 
-}) => {
+}, forwardedRef) => {
   const { getCategoryById, getCategoryColor } = useCategories();
   const category = getCategoryById(task.category);
   const categoryColor = getCategoryColor(task.category);
@@ -88,7 +88,16 @@ const TaskCard = ({
 
 return (
     <motion.div
-      ref={setNodeRef}
+      ref={(node) => {
+        setNodeRef(node);
+        if (forwardedRef) {
+          if (typeof forwardedRef === 'function') {
+            forwardedRef(node);
+          } else {
+            forwardedRef.current = node;
+          }
+        }
+      }}
       style={style}
       {...attributes}
       {...listeners}
@@ -180,8 +189,10 @@ return (
           </div>
         </div>
       </div>
-    </motion.div>
+</motion.div>
   );
-};
+});
+
+TaskCard.displayName = 'TaskCard';
 
 export default TaskCard;
